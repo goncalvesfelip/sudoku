@@ -2,7 +2,6 @@ package br.com.dio.model;
 
 import java.util.Collection;
 import java.util.List;
-
 import static br.com.dio.model.GameStatusEnum.COMPLETE;
 import static br.com.dio.model.GameStatusEnum.INCOMPLETE;
 import static br.com.dio.model.GameStatusEnum.NON_STARTED;
@@ -25,7 +24,6 @@ public class Board {
         if (spaces.stream().flatMap(Collection::stream).noneMatch(s -> !s.isFixed() && nonNull(s.getActual()))){
             return NON_STARTED;
         }
-
         return spaces.stream().flatMap(Collection::stream).anyMatch(s -> isNull(s.getActual())) ? INCOMPLETE : COMPLETE;
     }
 
@@ -33,7 +31,6 @@ public class Board {
         if(getStatus() == NON_STARTED){
             return false;
         }
-
         return spaces.stream().flatMap(Collection::stream)
                 .anyMatch(s -> nonNull(s.getActual()) && !s.getActual().equals(s.getExpected()));
     }
@@ -43,7 +40,6 @@ public class Board {
         if (space.isFixed()){
             return false;
         }
-
         space.setActual(value);
         return true;
     }
@@ -53,7 +49,6 @@ public class Board {
         if (space.isFixed()){
             return false;
         }
-
         space.clearSpace();
         return true;
     }
@@ -66,4 +61,15 @@ public class Board {
         return !hasErrors() && getStatus().equals(COMPLETE);
     }
 
+    public boolean getHint() {
+        for (List<Space> row : spaces) {
+            for (Space space : row) {
+                if (!space.isFixed() && isNull(space.getActual())) {
+                    space.setActual(space.getExpected());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
